@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ヴォンゴラ</string>
+    <string name="description_btn_add">新しい注文を追加</string>
+    <string name="text_container">テキスト</string>
+    <string name="order_num">76</string>
+    <string name="waiter">ジョン・ドウ</string>
+    <string name="description_btn_expand">特定の注文を展開</string>
+    <string name="btn_text">クリックしてね！</string>
+    <string name="btn_started_text">始める</string>
+    <string name="description_welcome_pic">ウェルカム画像</string>
+    <string name="searchbar_hint">注文を検索</string>
+    <string name="description_icon">アプリケーションのアイコン</string>
+    <string name="lbl_order_num">注文番号</string>
+    <string name="lbl_waiter">ウェイター名</string>
+    <string name="lbl_price">価格</string>
+    <string name="price">260.00</string>
+    <string name="lbl_products">製品</string>
+    <string name="lbl_discount">割引</string>
+    <string name="txt_num">12</string>
+    <string name="lbl_service_charge">サービス料</string>
+    <string name="lbl_taxes">税金</string>
+    <string name="lbl_sub_total">小計</string>
+    <string name="lbl_total">合計</string>
+    <string name="lbl_product_price">商品価格</string>
+    <string name="lbl_product_name">商品名</string>
+    <string name="lbl_product_quantity">数量</string>
+    <string name="product_price">28.00</string>
+    <string name="product_name">バーガー</string>
+    <string name="product_quantity">10</string>
+</resources>

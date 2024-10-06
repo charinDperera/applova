@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="ex_card_title_lbl">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="ex_card_title">
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="ex_card_subTitle_lbl">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="ex_card_subTitle">
+
+    </style>
+
+    <style name="create_title">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:layout_marginBottom">10dp</item>
+    </style>
+
+    <style name="create_sub_title">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="card_lbl">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="card_text">
+        <item name="android:textSize">21sp</item>
+    </style>
+
+    <style name="product_card_lbl">
+
+    </style>
+
+    <style name="product_card_text">
+
+    </style>
+    <!--    <style name="ex_card_subTitle">-->
+
+    <!--    </style>-->
+
+    <!--    <style name="ex_card_subTitle">-->
+
+    <!--    </style>-->
+
+    <!--    <style name="ex_card_subTitle">-->
+
+    <!--    </style>-->
+
+    <style name="create_card_container" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardElevation">5dp</item>
+        <item name="android:layout_margin">16dp</item>
+    </style>
+
+    <style name="InputShapeAppearance">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">26dp</item>
+    </style>
+
+    <style name="inputTextBox" parent="Widget.Material3.TextInputLayout.OutlinedBox">
+        <item name="shapeAppearanceOverlay">@style/InputShapeAppearance</item>
+        <item name="errorEnabled">true</item>
+        <item name="errorIconDrawable">@drawable/ic_error_icon</item>
+    </style>
+
+    <style name="inputTextBox.input_text" parent="Widget.Material3.TextInputEditText.OutlinedBox">
+        <item name="android:lines">1</item>
+        <item name="background">@drawable/clear_edit_view</item>
+        <item name="android:maxLength">21</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:imeOptions">actionDone</item>
+    </style>
+
+    <style name="name_input_box" parent="inputTextBox">
+        <item name="counterEnabled">true</item>
+        <item name="counterMaxLength">20</item>
+        <item name="endIconMode">clear_text</item>
+    </style>
+
+    <style name="name_input_box.input_text" parent="inputTextBox.input_text">
+        <item name="android:maxLength">20</item>
+        <item name="android:inputType">text</item>
+    </style>
+
+    <style name="btn_pagination" parent="Widget.Material3.Button.IconButton.Filled.Tonal">
+        <item name="iconSize">30dp</item>
+    </style>
+</resources>
