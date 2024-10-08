@@ -12,10 +12,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -23,6 +26,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.applova.charin.assessment2.R;
 import com.applova.charin.assessment2.adapter.CreateOrderProductsAdapter;
 import com.applova.charin.assessment2.dto.CreateOrdersRequestDTO;
+import com.applova.charin.assessment2.dto.ProductErrorDTO;
 import com.applova.charin.assessment2.model.Product;
 import com.applova.charin.assessment2.view_model.OrdersViewModel;
 import com.applova.charin.assessment2.view_model.ProductsViewModel;
@@ -56,6 +60,8 @@ public class CreateOrderActivity extends AppCompatActivity {
     private CreateOrderProductsAdapter productAdapter;
 
     private OrdersViewModel ordersViewModel;
+
+    private static MutableLiveData<List<ProductErrorDTO>> productErrorsLiveData = new MutableLiveData<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,7 +109,7 @@ public class CreateOrderActivity extends AppCompatActivity {
 
         productsViewModel = new ViewModelProvider(this).get(ProductsViewModel.class);
 
-        productAdapter = new CreateOrderProductsAdapter(CreateOrderActivity.this, productList, productsViewModel);
+        productAdapter = new CreateOrderProductsAdapter(this, this, productList, productsViewModel);
         productListView.setAdapter(productAdapter);
 
         setObservers();
@@ -129,16 +135,47 @@ public class CreateOrderActivity extends AppCompatActivity {
         });
 
         ordersViewModel.getCreateOrdersErrorResponse().observe(this, errorResponse -> {
-            Map<String, String> errorMap;
             String errorMessage = "";
             String errorLog = "";
 
             if (errorResponse.getException() != null && errorResponse.getException().getMessage().contains("failed to connect")) {
                 errorLog = "Failed to connect to server: " + errorResponse.getException().getCause();
                 errorMessage = "Connection timed out";
-            }else {
+            } else {
                 if (errorResponse.getCode() > 0) {
-                    // TODO Do the mapping part
+                    List<ProductErrorDTO> productErrors = new ArrayList<>();
+                    for (Map.Entry<String, String> entry : errorResponse.getErrorMap().entrySet()) {
+                        String key = entry.getKey();
+                        String value = entry.getValue();
+                        switch (key) {
+                            case "waiter":
+                                waiterLayout.setError("*" + value);
+                                errorMessage = "Check Waiter Name";
+                                break;
+                            case "taxes":
+                                taxLayout.setError("*" + value);
+                                errorMessage = "Check tax charge";
+                                break;
+                            case "serviceCharge":
+                                serviceLayout.setError("*" + value);
+                                errorMessage = "Check Service charge";
+                                break;
+                            case "discount":
+                                discountLayout.setError("*" + value);
+                                errorMessage = "Check discount";
+                                break;
+                            default:
+                                if (key.contains("product")){
+                                    // A product error will look like this "products[2].price": "Price cannot be less than 1"
+                                    productErrors.add(new ProductErrorDTO(Integer.parseInt(key.substring(key.indexOf('[') + 1, key.indexOf(']'))),
+                                            key.substring(key.indexOf('.') + 1), value));
+                                    errorMessage = "Check Product List";
+                                }
+                                break;
+                        }
+                    }
+
+                    productErrorsLiveData.setValue(productErrors);
                 } else {
                     errorMessage = errorResponse.getMessage();
                     errorLog = errorResponse.getMessage();
@@ -149,7 +186,7 @@ public class CreateOrderActivity extends AppCompatActivity {
             if (progressBar.getVisibility() == View.VISIBLE) {
                 progressBar.setVisibility(View.GONE);
             }
-            if(createLayout.getVisibility() == View.INVISIBLE) {
+            if (createLayout.getVisibility() == View.INVISIBLE) {
                 createLayout.setVisibility(View.VISIBLE);
             }
 
@@ -199,11 +236,17 @@ public class CreateOrderActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable editable) {
                 Log.e(TAG, textView.getHint().toString());
-                if (checkIfTextEmpty(textView)) {
-                    textLayout.setError(getString(R.string.lbl_required));
-                }
-                if(productValidated){
-                    if (textLayout.getError() != null) {
+                // Check if the text view is the product or price
+                if (textLayout.getHint().toString().contains("Pr") && !productValidated) {
+                    if (checkIfTextEmpty(textView)) {
+                        textLayout.setError(getString(R.string.lbl_required));
+                    } else if (textLayout.getError() != null) {
+                        textLayout.setError(null);
+                    }
+                } else if (!textLayout.getHint().toString().contains("Pr")) {
+                    if (checkIfTextEmpty(textView)) {
+                        textLayout.setError(getString(R.string.lbl_required));
+                    } else if (textLayout.getError() != null) {
                         textLayout.setError(null);
                     }
                 }
@@ -247,6 +290,7 @@ public class CreateOrderActivity extends AppCompatActivity {
                 quantity = 1;
                 quantityView.setText(String.valueOf(quantity));
             }
+            productValidated = false;
         });
 
         createOrder.setOnClickListener(view -> {
@@ -319,5 +363,10 @@ public class CreateOrderActivity extends AppCompatActivity {
             Toast.makeText(this, "Need at least 1 product", Toast.LENGTH_SHORT).show();
         }
         orderValidated = validation;
+    }
+
+    @NonNull
+    public static LiveData<List<ProductErrorDTO>> getProductErrorLiveData(){
+        return productErrorsLiveData;
     }
 }
