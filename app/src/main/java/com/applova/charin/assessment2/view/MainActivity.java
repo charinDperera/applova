@@ -97,7 +97,6 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
             @Override
             public boolean onQueryTextChange(String newText) {
                 if(newText.isEmpty()){
-                    Toast.makeText(MainActivity.this, "Here", Toast.LENGTH_SHORT).show();
                     ordersViewModel.requestOrdersPage(pageNum);
                 }
                 else {
@@ -124,12 +123,6 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         });
 
         refreshOrdersLayout.setOnRefreshListener(this);
-        searchView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean b) {
-                Toast.makeText(MainActivity.this, "Boolean is: " + b, Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
     private void setObservers() {
@@ -211,7 +204,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         if (!filteredList.isEmpty()) {
             orderList.clear();
             orderList.addAll(filteredList);
-            orderAdapter.setOrderList(orderList);
+            orderAdapter.notifyDataSetChanged();
         }
     }
 
