@@ -64,6 +64,24 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         init();
     }
 
+    private void init() {
+        initializeViews();
+        addListeners();
+
+        paginationLayout.setVisibility(View.GONE);
+        searchView.clearFocus();
+
+        orderListView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+        orderListView.setHasFixedSize(true);
+
+        orderAdapter = new OrderRecyclerAdapter(MainActivity.this, orderList);
+        orderListView.setAdapter(orderAdapter);
+
+        ordersViewModel = new ViewModelProvider(this).get(OrdersViewModel.class);
+        onRefresh();
+        setObservers();
+    }
+
     private void addListeners() {
         createOrderButton.setOnClickListener(view -> {
             Intent intent = new Intent(MainActivity.this, CreateOrderActivity.class);
@@ -78,7 +96,13 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                filterList(newText);
+                if(newText.isEmpty()){
+                    Toast.makeText(MainActivity.this, "Here", Toast.LENGTH_SHORT).show();
+                    ordersViewModel.requestOrdersPage(pageNum);
+                }
+                else {
+                    filterList(newText);
+                }
                 return true;
             }
         });
@@ -100,24 +124,12 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         });
 
         refreshOrdersLayout.setOnRefreshListener(this);
-    }
-
-    private void init() {
-        initializeViews();
-        addListeners();
-
-        paginationLayout.setVisibility(View.GONE);
-        searchView.clearFocus();
-
-        orderListView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-        orderListView.setHasFixedSize(true);
-
-        orderAdapter = new OrderRecyclerAdapter(MainActivity.this, orderList);
-        orderListView.setAdapter(orderAdapter);
-
-        ordersViewModel = new ViewModelProvider(this).get(OrdersViewModel.class);
-        onRefresh();
-        setObservers();
+        searchView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                Toast.makeText(MainActivity.this, "Boolean is: " + b, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void setObservers() {
@@ -197,7 +209,9 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
             }
         }
         if (!filteredList.isEmpty()) {
-            orderAdapter.setOrderList(filteredList);
+            orderList.clear();
+            orderList.addAll(filteredList);
+            orderAdapter.setOrderList(orderList);
         }
     }
 
@@ -214,5 +228,6 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         isLoading = true;
         orderList.clear();
         ordersViewModel.requestOrdersPage(pageNum);
+        searchView.clearFocus();
     }
 }
